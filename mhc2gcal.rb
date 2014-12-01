@@ -167,17 +167,15 @@ mhc_gevs = []
 
 # collect EVENTs from Google Calendarin the period of date
 puts "Collect EVENTs from Google Calendar"
-stg_date = date_from.dec(90)
-stgcal = Time.mktime(stg_date.y.to_i, stg_date.m.to_i, stg_date.d.to_i, 0, 0, 0).gmtime.xmlschema
-st = Time.mktime(date_from.y.to_i, date_from.m.to_i, date_from.d.to_i, 0, 0, 0).gmtime.xmlschema
-en = Time.mktime(date_to.y.to_i, date_to.m.to_i, date_to.d.to_i, 23, 59, 59).gmtime.xmlschema
+st = Time.mktime(date_from.y.to_i, date_from.m.to_i, date_from.d.to_i, 0, 0, 0).xmlschema
+en = Time.mktime(date_to.y.to_i, date_to.m.to_i, date_to.d.to_i, 23, 59, 59).xmlschema
 
 page_token = nil
 result = client.execute(:api_method => srv.events.list,
                         :parameters => {'calendarId' => gcal_yaml["calender_id"],
                           'maxResults' => '100',
                           'timeZone' => gcal_yaml["timezone"],
-                          'timeMin' => stgcal,
+                          'timeMin' => st,
                           'timeMax' => en})
 while true
   events = result.data.items
@@ -193,7 +191,7 @@ while true
                           :parameters => {'calendarId' => gcal_yaml["calender_id"],
                             'maxResults' => '100',
                             'timeZone' => gcal_yaml["timezone"],
-                            'timeMin' => stgcal,
+                            'timeMin' => st,
                             'timeMax' => en,
                             'pageToken' => page_token})
 end
@@ -267,8 +265,8 @@ gcal_gevs.each { |gcal_gev|
   mhc_gevs.each { |mhc_gev|
     if mhc_gev['summary'] == gcal_gev['summary'] &&
         mhc_gev['location'] == gcal_gev['location'] &&
-        mhc_gev['start'] == gcal_gev['start'] &&
-        mhc_gev['end'] == gcal_gev['end'] &&
+        mhc_gev['start'] == gcal_gev['start'].to_hash &&
+        mhc_gev['end'] == gcal_gev['end'].to_hash &&
         mhc_gev['description'] == gcal_gev['description']
       find_the_same_event = true
       break
@@ -293,7 +291,7 @@ gcal_gevs.each { |gcal_gev|
         puts "Keep EVENT only in Google Calendar"
       end
       puts "  What: #{gcal_gev['summary']}"
-      puts "  When: #{gcal_gev['start']} - #{gcal_gev['end']}"
+      puts "  When: #{gcal_gev['start'].to_hash} - #{gcal_gev['end'].to_hash}"
       puts "  Where: #{gcal_gev['location']}"
     end
   end
@@ -305,8 +303,8 @@ mhc_gevs.each { |mhc_gev|
   gcal_gevs.each { |gcal_gev|
     if mhc_gev['summary'] == gcal_gev['summary'] &&
         mhc_gev['location'] == gcal_gev['location'] &&
-        mhc_gev['start'] == gcal_gev['start'] &&
-        mhc_gev['end'] == gcal_gev['end'] &&
+        mhc_gev['start'] == gcal_gev['start'].to_hash &&
+        mhc_gev['end'] == gcal_gev['end'].to_hash &&
         mhc_gev['description'] == gcal_gev['description']
       find_the_same_event = true
       break
